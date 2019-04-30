@@ -12,6 +12,6 @@ src: local('Catull Regular'), url('Catull.woff') format('woff');
 }
 
 .logo img {
-  height: 140px;
+  height: 65px;
   width: auto;
 }
