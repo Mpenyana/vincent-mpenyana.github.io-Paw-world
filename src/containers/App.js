@@ -1,17 +1,32 @@
 import React from 'react';
 import './App.css';
 import CardList from '../components/CardList';
+import { connect } from 'react-redux';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import logo from './pawprint.png';
 import Nav from '../components/Nav';
+import ErrorBoundary from '../components/ErrorBoundary';
+
+import { setSearchField} from '../actions';
+
+const mapStateToProps = state => {
+  return {
+    searchField: state.searchField
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onSearchChange: (event) =>dispatch(setSearchField(event.target.value))
+  }
+}
 
 class App extends React.Component{
   constructor(){
     super()
     this.state = {
       cats: [],
-      searchField: ''
     }
   }
 
@@ -23,13 +38,10 @@ class App extends React.Component{
     })
   }
 
-  onSearchChange = (event) => {
-    this.setState({searchField: event.target.value})
-  }
-
   render(){
+    const { searchField, onSearchChange } = this.props
     const filteredCats = this.state.cats.filter(cat => {
-      return cat.name.toLowerCase().includes(this.state.searchField.toLowerCase())
+      return cat.name.toLowerCase().includes(searchField.toLowerCase())
     })
     return(
     this.state.cats.length === 0 ? <h1 className='f1 fw7 tc'>Loading...</h1>
@@ -37,10 +49,12 @@ class App extends React.Component{
       <div className='tc'>
         <Nav>
           <p className='logo'><img src={logo} alt='logo'/></p>
-          <SearchBox onSearchChange={this.onSearchChange}/>
+          <SearchBox onSearchChange={onSearchChange}/>
         </Nav>
         <Scroll>
-          <CardList cats={filteredCats}/>
+          <ErrorBoundary>
+            <CardList cats={filteredCats}/>
+          </ErrorBoundary>
         </Scroll>
 
         <div className='mt4 pa2'>logo downloaded from <a href="https://www.flaticon.com/"           
@@ -53,4 +67,4 @@ class App extends React.Component{
   }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
